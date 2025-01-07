@@ -1,17 +1,17 @@
-// Berichten vanaf een MariaDB/SQL Server laten zien op een
-// Matrix Display van een Arduino UNO R4 Wifi.
+// Show messages from a MariaDB/SQL Server on the
+// Matrix Display of a Arduino UNO R4 Wifi.
 // (c) 2025 Richard, webwings.nl 
 
-#include "secrets.h"                    // Wifi & Database gegevens.
-#include <WiFiS3.h>                     // WiFi-bibliotheek voor UNO R4 WiFi
-#include <MySQL_Connection.h>           // MySQL bibliotheek
-#include <MySQL_Cursor.h>               // Voor SQL-query's
-#include <ArduinoGraphics.h>            // Grafische bibliotheek
-#include <Arduino_LED_Matrix.h>         // LED-matrix ondersteuning
+#include "secrets.h"                    // Wifi & Database credentials.
+#include <WiFiS3.h>                     // WiFi-library for the UNO R4 WiFi
+#include <MySQL_Connection.h>           // MySQL library
+#include <MySQL_Cursor.h>               // For SQL-queries
+#include <ArduinoGraphics.h>            // Graphic library
+#include <Arduino_LED_Matrix.h>         // LED-matrix support
 
-// WiFi-instellingen
-const char* ssid = WIFI_SSID;           // Gebruik gegevens uit secrets.h
-const char* password = WIFI_PASSWORD;   // Gebruik gegevens uit secrets.h
+// WiFi-Setup
+const char* ssid = WIFI_SSID;           // Use data from secrets.h
+const char* password = WIFI_PASSWORD;   // Use data from secrets.h
 
 // MySQL database instellingen
 const char* server_url = DB_HOST;       // Gebruik gegevens uit secrets.h
