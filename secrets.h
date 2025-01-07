@@ -4,11 +4,11 @@
 #ifndef SECRETS_H
 #define SECRETS_H
 
-// WiFi-gegevens
+// WiFi-Credentials
 const char* WIFI_SSID = "my-wifi-network";
 const char* WIFI_PASSWORD = "my-wifi-password";
 
-// MySQL database-instellingen
+// MySQL/MariaDB database-configuration
 const char* DB_USER = "db-username";
 const char* DB_PASSWORD = "db-user-password";
 const char* DB_HOST = "host-url";
