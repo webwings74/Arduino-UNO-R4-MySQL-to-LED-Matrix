@@ -1,5 +1,5 @@
 # Arduino UNO R4 Wifi SQL to LED Matrix
-A small project to scroll messages from a MariaDB/MySQL database on a server to the LED Matrix on the Arduino UNO R4 Wifi, like the one I have and as shown below in the picture.
+A small project to scroll messages from a MariaDB/MySQL database on a server to the LED Matrix on the Arduino UNO R4 Wifi, like the one I have and as shown below in the picture. The code should be quite self-explanitory, however it does contain remarks. They can be mostly in dutch, though. I will correct that in the near future.
 
 ![Arduino Uno R4 Wifi, with the LED Matrix](arduino-uno-r4-wifi.jpg)
 
