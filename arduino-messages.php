@@ -1,4 +1,9 @@
 <?php
+// Arduino UNO R4 Wifi displaying messages on the onboard LED Matrix display from a (remote)
+// MariaDB/MySQL database server. This PHP script adds, edits and deletes the messages in the
+// arduino_messages table.
+// (c)2025 Richard, webwings.nl
+
 // Load Database Configuration
 require_once 'config.php';
 

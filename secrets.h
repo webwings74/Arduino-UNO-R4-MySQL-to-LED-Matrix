@@ -1,5 +1,7 @@
-// "Secret" Configuration File
-// Edit as needed. 
+// "Secret" Configuration File, containing the credentials needed for
+// displaying the messages on the Arduino UNO R4 Wifi LED matrix.
+// (c)2025 Richard, webwings.nl
+// Use and edit as needed, have fun! 
 
 #ifndef SECRETS_H
 #define SECRETS_H
