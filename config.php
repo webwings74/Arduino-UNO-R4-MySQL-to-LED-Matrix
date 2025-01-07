@@ -1,7 +1,7 @@
 <?php
-define('DB_SERVER', 'localhost');               // Of IP-adres zoals '127.0.0.1'
-define('DB_USERNAME', 'database-username');     // Databasegebruiker
-define('DB_PASSWORD', 'database-password');     // Wachtwoord
-define('DB_NAME', 'database-name');             // Database naam
-define('DB_PORT', 3307);                        // Database Port (If Needed?)
+define('DB_SERVER', 'localhost');                 // Or an IP-adress like '127.0.0.1'
+define('DB_USERNAME', 'your-database-username');  // Database User-account
+define('DB_PASSWORD', 'your-database-password');  // Database User Password
+define('DB_NAME', 'your-database-name');          // Database Name
+define('DB_PORT', 3307);                          // Database Port (If Needed)
 ?>
