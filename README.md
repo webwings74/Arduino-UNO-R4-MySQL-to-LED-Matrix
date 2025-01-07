@@ -4,7 +4,10 @@ A small project to scroll messages from a MariaDB/MySQL database on a server to 
 ![Arduino Uno R4 Wifi, with the LED Matrix](arduino-uno-r4-wifi.jpg)
 
 ## Files
-Here is the list of files, and what they do.
+Here is the list of files, and a small description what they do.
+
+### arduino-messages.php
+This small PHP script can add, edit and delete messages in the arduino-messages table in the MariaDB/MySQL database server. In my case, the PHP file is on the same server as the database, but this is not nessesary.
 
 ### arduino-messages.sql
 This is the SQL file, that creates the "arduino_messages" table in a MariaDB or MySQL database of your choice. Please create an account for the use of the table by the Arduino.
@@ -17,6 +20,3 @@ This is the personal configuration file. Here you need to add your wifi credenti
 
 ### uno-r4-wifi-sql-to-matrix.ino
 Off course, this is the Adruino IDE file to import in your Sketch (together with the secrets.h file!).
-
-## Future updates
-I'm currently working on the PHP serverside page on which you can easily add, edit and delete the messages in the "arduino_messages" table. When that part is done and tested, I'll put it also up here, it is separate from the Arduino, reading the database.
