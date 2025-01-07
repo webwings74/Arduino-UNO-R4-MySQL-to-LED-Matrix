@@ -1,85 +1,85 @@
 <?php
-// Laad configuratie-instellingen
+// Load Database Configuration
 require_once 'config.php';
 
-// Database configuratie
-$servername = DB_SERVER;        // Of gebruik "127.0.0.1"
-$username = DB_USERNAME;        // Databasegebruiker
-$password = DB_PASSWORD;        // Wachtwoord
-$dbname = DB_NAME;              // Database naam
-$dbport = DB_PORT;              // Database poort
+// Set Database Configuration
+$servername = DB_SERVER;        // Or use an IP Adress, like "127.0.0.1"
+$username = DB_USERNAME;        // Database User Account
+$password = DB_PASSWORD;        // Database User Password
+$dbname = DB_NAME;              // Database Name, containing the messages table.
+$dbport = DB_PORT;              // Database Port, can be different from 3306.
 
-// Verbinding maken met de database
+// Connecting to the database
 $conn = new mysqli($servername, $username, $password, $dbname, $dbport);
 
-// Controleer verbinding
+// Check connection
 if ($conn->connect_error) {
-    die("Verbinding mislukt: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error);
 }
 
-// Bericht toevoegen
+// Add a message
 if (isset($_POST['add'])) {
     $message = $conn->real_escape_string($_POST['message']);
     $sql = "INSERT INTO arduino_messages (message_text) VALUES ('$message')";
     if ($conn->query($sql) === TRUE) {
-        echo "Bericht toegevoegd!";
+        echo "Message added!";
     } else {
-        echo "Fout: " . $conn->error;
+        echo "Error: " . $conn->error;
     }
 }
 
-// Bericht bijwerken
+// Edit message
 if (isset($_POST['edit'])) {
     $id = intval($_POST['id']);
     $message = $conn->real_escape_string($_POST['message']);
     $sql = "UPDATE arduino_messages SET message_text='$message' WHERE id=$id";
     if ($conn->query($sql) === TRUE) {
-        echo "Bericht bijgewerkt!";
+        echo "Message edited!";
     } else {
-        echo "Fout: " . $conn->error;
+        echo "Error: " . $conn->error;
     }
 }
 
-// Bericht verwijderen
+// Delete message
 if (isset($_POST['delete'])) {
     $id = intval($_POST['id']);
     $sql = "DELETE FROM arduino_messages WHERE id=$id";
     if ($conn->query($sql) === TRUE) {
-        echo "Bericht verwijderd!";
+        echo "Message deleted!";
     } else {
-        echo "Fout: " . $conn->error;
+        echo "Error: " . $conn->error;
     }
 }
 
-// Alle berichten ophalen
+// Get all messages
 $sql = "SELECT * FROM arduino_messages ORDER BY created_at DESC";
 $result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Berichtenbeheer</title>
+    <title>Arduino UNO Messages</title>
 </head>
 <body>
-    <h1>Berichtenbeheer voor Arduino LED-matrix</h1>
+    <h1>Arduino UNO R4 Wifi LED-matrix</h1>
 
-    <!-- Bericht toevoegen -->
-    <h2>Bericht toevoegen:</h2>
+    <!-- Add message -->
+    <h2>Add message:</h2>
     <form method="POST">
-        <input type="text" name="message" placeholder="Nieuw bericht" required>
-        <button type="submit" name="add">Toevoegen</button>
+        <input type="text" name="message" placeholder="New message" required>
+        <button type="submit" name="add">Add</button>
     </form>
 
-    <!-- Lijst van berichten -->
-    <h2>Huidige berichten:</h2>
+    <!-- List of messages -->
+    <h2>Current messages:</h2>
     <table border="1">
         <tr>
             <th>ID</th>
-            <th>Bericht</th>
-            <th>Aangemaakt op</th>
-            <th>Acties</th>
+            <th>Message</th>
+            <th>Created on</th>
+            <th>Actions</th>
         </tr>
         <?php
         if ($result->num_rows > 0) {
@@ -92,17 +92,17 @@ $result = $conn->query($sql);
                         <form method='POST' style='display:inline;'>
                             <input type='hidden' name='id' value='{$row['id']}'>
                             <input type='text' name='message' value='{$row['message_text']}' required>
-                            <button type='submit' name='edit'>Wijzigen</button>
+                            <button type='submit' name='edit'>Edit</button>
                         </form>
                         <form method='POST' style='display:inline;'>
                             <input type='hidden' name='id' value='{$row['id']}'>
-                            <button type='submit' name='delete' onclick='return confirm(\"Weet je zeker dat je dit bericht wilt verwijderen?\")'>Verwijderen</button>
+                            <button type='submit' name='delete' onclick='return confirm(\"Are you sure to delete?\")'>Delete</button>
                         </form>
                     </td>
                 </tr>";
             }
         } else {
-            echo "<tr><td colspan='4'>Geen berichten gevonden.</td></tr>";
+            echo "<tr><td colspan='4'>No messages found.</td></tr>";
         }
         ?>
     </table>
@@ -110,6 +110,6 @@ $result = $conn->query($sql);
 </html>
 
 <?php
-// Verbinding sluiten
+// Close connection
 $conn->close();
 ?>
