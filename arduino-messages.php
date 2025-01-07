@@ -66,6 +66,8 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <title>Arduino UNO Messages</title>
+    <!-- Koppeling naar externe CSS-bestand -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>Arduino UNO R4 Wifi LED-matrix</h1>
