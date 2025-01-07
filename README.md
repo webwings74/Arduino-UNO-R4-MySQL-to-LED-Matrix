@@ -18,6 +18,9 @@ The file that contains your database configuration. Please update as needed. It 
 ### secrets.h
 This is the personal configuration file. Here you need to add your wifi credentials that the Arduino has to use, and the database information and database user account. Edit as needed.
 
+### style.css
+The stylesheet, to nice-ify the PHP script page to edit the messages. Off course this is optional, however quite nice.
+
 ### uno-r4-wifi-sql-to-matrix.ino
 Off course, this is the Adruino IDE file to import in your Sketch (together with the secrets.h file!).
 
