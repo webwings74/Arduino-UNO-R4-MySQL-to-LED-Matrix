@@ -11,6 +11,32 @@ body {
     font-family: Arial, sans-serif;
 }
 
+table, th, td {
+    border-collapse: collapse;
+    border: 1px solid;
+    padding: 2px;
+}
+
+/* Titel stijl */
+h1 {
+    font-size: 4vw; /* Titelgrootte */
+    margin: 0;
+    color: #555;
+}
+
+/* Groot getal stijl */
+h2 {
+    font-size: 2vw; /* Groot getal */
+    margin: 0;
+    color: #333;
+}
+
+/* Optionele extra styling voor toekomstige uitbreidingen */
+footer {
+    margin-top: 20px;
+    font-size: 1.5vw;
+    color: #777;
+}
 /* Titel stijl */
 h1 {
     font-size: 4vw; /* Titelgrootte */
