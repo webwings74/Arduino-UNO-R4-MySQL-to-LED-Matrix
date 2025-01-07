@@ -9,6 +9,9 @@ Here is the list of files, and what they do.
 ### arduino-messages.sql
 This is the SQL file, that creates the "arduino_messages" table in a MariaDB or MySQL database of your choice. Please create an account for the use of the table by the Arduino.
 
+### config.php
+The file that contains your database configuration. Please update as needed. It needs your database credentials for using the database.
+
 ### secrets.h
 This is the personal configuration file. Here you need to add your wifi credentials that the Arduino has to use, and the database information and database user account. Edit as needed.
 
