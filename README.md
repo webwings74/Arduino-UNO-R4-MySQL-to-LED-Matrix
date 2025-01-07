@@ -20,3 +20,6 @@ This is the personal configuration file. Here you need to add your wifi credenti
 
 ### uno-r4-wifi-sql-to-matrix.ino
 Off course, this is the Adruino IDE file to import in your Sketch (together with the secrets.h file!).
+
+## Things to remember
+The arduino-messages.php file does not have any security measures for adding, editing and deleting messages. So if someone knows the URL of the PHP file, he/she can see and edit the messages. Let me know if this needs to be addressed, or if you have a good solution, you also can let me know. Enjoy using your Arduino's, ESP32's and all the other types of MCU's.
