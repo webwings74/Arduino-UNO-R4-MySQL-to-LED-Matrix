@@ -156,7 +156,7 @@ void fetchMessagesAndScroll() {
     matrix.endDraw();
 
     // Wacht even voordat het volgende bericht komt
-    delay(5000);  // 5 seconden pauze tussen berichten
+    delay(1000);  // 1 seconde pauze tussen berichten
   }
 
   // Cursor opruimen
