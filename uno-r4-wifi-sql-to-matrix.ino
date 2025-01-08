@@ -14,123 +14,123 @@ const char* ssid = WIFI_SSID;           // Use data from secrets.h
 const char* password = WIFI_PASSWORD;   // Use data from secrets.h
 
 // MySQL database instellingen
-const char* server_url = DB_HOST;       // Gebruik gegevens uit secrets.h
-IPAddress server_ip;                    // IP-adres dat via DNS wordt opgehaald
-const int server_port = DB_PORT;        // Gebruik gegevens uit secrets.h
-char user[20];                          // Maak een array van vaste grootte
-char password_db[20];                   // Voor wachtwoord
-char database[32];                      // Ook voor de te gebruiken database
+const char* server_url = DB_HOST;       // Use credentials from secrets.h
+IPAddress server_ip;                    // IP-adress that is retrieved by DNS
+const int server_port = DB_PORT;        // Use port from secrets.h
+char user[20];                          // Username, define array
+char password_db[20];                   // Password, define array
+char database[32];                      // Database name, used to store the table.
 
-// Database en query
+// Database SQL Query to retrieve messages
 const char query[] = "SELECT message_text FROM arduino_messages ORDER BY created_at DESC;";
 
-// WiFi- en MySQL-objecten
+// WiFi- en MySQL-objects
 WiFiClient client;
 MySQL_Connection conn((Client *)&client);
 
 // LED-matrix object
 ArduinoLEDMatrix matrix;
 
-// Variabelen voor berichtenbeheer
-String scrollText = " Verbinding maken... ";  // Starttekst
+// Message variables
+String scrollText = " Verbinding maken... ";  // Start text
 bool newTextAvailable = false;
 
 // Setup
 void setup() {
   // Variabelen voor de gebruiker en de database uit secrets.h
-  strcpy(user, DB_USER);                  // Kopieer waarde uit secrets.h
-  strcpy(password_db, DB_PASSWORD);       // Kopieer wachtwoord uit secrets.h
-  strcpy(database, DB_NAME);              // Kopieer database naam uit secrets.h
+  strcpy(user, DB_USER);                  // Database Username from secrets.h
+  strcpy(password_db, DB_PASSWORD);       // Password from secrets.h
+  strcpy(database, DB_NAME);              // Database from secrets.h
 
-  // Seriële monitor starten
+  // Start serial monitor
   Serial.begin(115200);
   while (!Serial);
 
-  // Verbinden met WiFi
+  // Connect to WiFi
   connectToWiFi();
 
-  // DNS-resolutie uitvoeren
+  // DNS resolve 
   Serial.print("Resolving hostname: ");
   Serial.println(server_url);
   if (!WiFi.hostByName(server_url, server_ip)) {
-    Serial.println("DNS-resolutie mislukt!");
-    while (1); // Stop als DNS niet werkt
+    Serial.println("DNS-resolution failed!");
+    while (1); // Stop if DNS does not work
   }
   Serial.print("Server IP-adres: ");
   Serial.println(server_ip);
 
-  // Verbinden met MySQL-server
+  // Connecct to MySQL-server
   connectToDatabase();
 
-  // Initialiseer LED-matrix
+  // Init LED-matrix
   matrix.begin();
   matrix.beginDraw();
-  matrix.stroke(0xFFFFFFFF);           // Witte tekstkleur
-  matrix.textScrollSpeed(50);          // Scrollsnelheid instellen
-  matrix.textFont(Font_5x7);           // Lettertype instellen
+  matrix.stroke(0xFFFFFFFF);           // White textcolor
+  matrix.textScrollSpeed(50);          // Scrollspeed
+  matrix.textFont(Font_5x7);           // Font select
   matrix.endDraw();
 }
 
-// Functie om verbinding te maken met WiFi
+// Function to connect to wifi
 void connectToWiFi() {
-  Serial.print("Verbinding maken met WiFi...");
+  Serial.print("Connecting to WiFi...");
   WiFi.begin(ssid, password);
-  int retries = 20;  // Maximaal 20 pogingen
+  int retries = 20;  // Max 20 retries
   while (WiFi.status() != WL_CONNECTED && retries > 0) {
     delay(500);
     Serial.print(".");
     retries--;
   }
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\nWiFi Verbonden!");
+    Serial.println("\nWiFi connected!");
   } else {
     Serial.println("\nWiFi Verbinden mislukt. Controleer instellingen!");
     while (1);  // Stop programma
   }
 }
 
-// Functie om verbinding te maken met MySQL
+// Function to connect to MySQL
 void connectToDatabase() {
-  Serial.print("Verbinden met MySQL-server...");
-  int retries = 3; // Maximaal 3 pogingen
+  Serial.print("Connecting to MySQL-server...");
+  int retries = 3; // Max 3 retries
   while (retries > 0 && !conn.connected()) {
     if (conn.connect(server_ip, server_port, user, password_db)) {
-      Serial.println(" Verbonden!");
+      Serial.println(" Connected!");
 
-      // Database selecteren
+      // Database select
       MySQL_Cursor* cursor = new MySQL_Cursor(&conn);
       char use_db[50];
       sprintf(use_db, "USE %s;", database);
-      cursor->execute(use_db);  // Selecteer database
+      cursor->execute(use_db);  // Select database
       delete cursor;
-      Serial.println("Database geselecteerd!");
+      Serial.println("Database selected!");
       return;
     } else {
       retries--;
-      Serial.println(" Verbindingspoging mislukt. Opnieuw proberen...");
-      delay(2000); // Wacht 2 seconden en probeer opnieuw
+      Serial.println(" Connecction failed. Trying again...");
+      delay(2000); // Wait 2 seconds
     }
   }
 
-  Serial.println("Kan geen verbinding maken met de database. Stop programma.");
-  while (1);  // Stop het programma
+  Serial.println("Cannot connect to the database. Stopping programm.");
+  while (1);  // Stop programm
 }
 
-// Functie om berichten op te halen en weer te geven
+// Function to fetch messages and display them
 void fetchMessagesAndScroll() {
-  // Controleer WiFi-verbinding
+  // Check Wifi connection
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi-verbinding verloren. Opnieuw verbinden...");
+    Serial.println("WiFi-connection lost. Connecting again...");
     connectToWiFi();
   }
 
-  // Controleer MySQL-verbinding
+  // Check MySQL-connection
   if (!conn.connected()) {
-    Serial.println("Databaseverbinding verloren. Opnieuw verbinden...");
+    Serial.println("Database connection lost. Connecting again...");
     connectToDatabase();
   }
 
-  // Query uitvoeren
+  // Execute Query
   MySQL_Cursor* cursor = new MySQL_Cursor(&conn);
   if (!cursor->execute(query)) {
     Serial.println("Fout bij uitvoeren van query!");
