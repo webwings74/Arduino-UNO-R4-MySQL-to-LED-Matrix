@@ -8,7 +8,7 @@
 require_once 'config.php';
 
 // Set Database Configuration
-$servername = DB_SERVER;        // Or use an IP Adress, like "127.0.0.1"
+$servername = DB_SERVER;        // This can be localhost, an URL or an IP address
 $username = DB_USERNAME;        // Database User Account
 $password = DB_PASSWORD;        // Database User Password
 $dbname = DB_NAME;              // Database Name, containing the messages table.
