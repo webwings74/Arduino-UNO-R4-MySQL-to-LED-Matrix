@@ -138,37 +138,37 @@ void fetchMessagesAndScroll() {
     return;
   }
 
-  // Kolomnamen ophalen
+  // Retrieve column names
   column_names *cols = cursor->get_columns();
 
-  // Resultaten ophalen en weergeven
+  // Retrieve results and display on LED matrix
   row_values *row;
-  while ((row = cursor->get_next_row())) { // Doorloop alle rijen
-    String message = row->values[0];      // Haal bericht op
-    message = "     " + message;          // Voeg spaties toe voor scroll-effect
+  while ((row = cursor->get_next_row())) {  // Cycle all rows sequentially
+    String message = row->values[0];        // Get message
+    message = "     " + message;            // Add spaces for scrolling effect
     Serial.println("Bericht: " + message);
 
-    // Scroll het bericht op de LED-matrix
+    // Scroll message on the LED-matrix
     matrix.beginDraw();
-    matrix.beginText(0, 1, 0xFFFFFF);  // Positie en kleur
-    matrix.println(message);           // Scroll de tekst
-    matrix.endText(SCROLL_LEFT);       // Scroll van rechts naar links
+    matrix.beginText(0, 1, 0xFFFFFF);  // Position and colour
+    matrix.println(message);           // Scroll text
+    matrix.endText(SCROLL_LEFT);       // Scroll right to left
     matrix.endDraw();
 
-    // Wacht even voordat het volgende bericht komt
-    delay(1000);  // 1 seconde pauze tussen berichten
+    // Wait a moment for the next message
+    delay(1000);  // 1 second break between messages
   }
 
-  // Cursor opruimen
+  // Clear cursor
   delete cursor;
 }
 
-// Hoofdprogramma
+// Main programm
 void loop() {
-  // Controleer elke 30 seconden op updates
+  // Check every 30 seconds for message updates.
   static unsigned long lastUpdate = 0;
-  if (millis() - lastUpdate > 30000) { // 30 seconden vertraging
-    fetchMessagesAndScroll();  // Haal berichten op en scroll ze
+  if (millis() - lastUpdate > 30000) {  // 30 seconds delay
+    fetchMessagesAndScroll();           // Check for messages and retrieve them
     lastUpdate = millis();
   }
 }
