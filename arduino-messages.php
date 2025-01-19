@@ -1,23 +1,23 @@
 <?php
-// Laad configuratie-instellingen
+// Load configuration-settings
 require_once 'config.php';
 
-// Database configuratie
-$servername = DB_SERVER;        // localhost, URL of IP in config.php
-$username = DB_USERNAME;        // Database gebruikersnaam
-$password = DB_PASSWORD;        // Database Wachtwoord
-$dbname = DB_NAME;              // Database naam (arduino)
-$dbport = DB_PORT;              // Database poort (Standaard 3306)
+// Database configuration
+$servername = DB_SERVER;        // localhost, URL or IP in config.php
+$username = DB_USERNAME;        // Database username
+$password = DB_PASSWORD;        // Database password
+$dbname = DB_NAME;              // Database (arduino)
+$dbport = DB_PORT;              // Database port (Standard 3306)
 
-// Verbinding maken met de database
+// Establish connection to database
 $conn = new mysqli($servername, $username, $password, $dbname, $dbport);
 
-// Controleer verbinding
+// Check connection
 if ($conn->connect_error) {
     die("Verbinding mislukt: " . $conn->connect_error);
 }
 
-// Bericht toevoegen
+// Add message
 if (isset($_POST['add'])) {
     $message = $conn->real_escape_string($_POST['message']);
     $sql = "INSERT INTO arduino_messages (message_text) VALUES ('$message')";
@@ -28,7 +28,7 @@ if (isset($_POST['add'])) {
     }
 }
 
-// Bericht bijwerken
+// Edit Message
 if (isset($_POST['edit'])) {
     $id = intval($_POST['id']);
     $message = $conn->real_escape_string($_POST['message']);
@@ -40,7 +40,7 @@ if (isset($_POST['edit'])) {
     }
 }
 
-// Bericht verwijderen
+// Delete Message
 if (isset($_POST['delete'])) {
     $id = intval($_POST['id']);
     $sql = "DELETE FROM arduino_messages WHERE id=$id";
@@ -51,7 +51,7 @@ if (isset($_POST['delete'])) {
     }
 }
 
-// Alle berichten ophalen
+// Retrieve all messages
 $sql = "SELECT * FROM arduino_messages ORDER BY created_at DESC";
 $result = $conn->query($sql);
 ?>
@@ -60,9 +60,8 @@ $result = $conn->query($sql);
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <title>Arduino Berichtenbeheer</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
+    <title>Arduino Message Dashboard</title>
+   <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -153,21 +152,21 @@ $result = $conn->query($sql);
     <div class="container">
         <h1>Arduino UNO R4 LED-Matrix</h1>
 
-        <!-- Bericht toevoegen -->
-        <h2>Bericht toevoegen</h2>
+        <!-- Add message -->
+        <h2>Add message</h2>
         <form method="POST">
-            <input type="text" name="message" placeholder="Nieuw bericht" required>
-            <button type="submit" name="add">Toevoegen</button>
+            <input type="text" name="message" placeholder="New message" required>
+            <button type="submit" name="add">Add</button>
         </form><br><br>
 
-        <!-- Lijst van berichten -->
-        <h2>Huidige berichten</h2>
+        <!-- Message list -->
+        <h2>Current messages</h2>
         <table>
             <tr>
                 <th>ID</th>
-                <th>Bericht</th>
-                <th>Aangemaakt op</th>
-                <th>Acties</th>
+                <th>Message</th>
+                <th>Created add</th>
+                <th>Actions</th>
             </tr>
             <?php
             if ($result->num_rows > 0) {
@@ -180,21 +179,20 @@ $result = $conn->query($sql);
                             <form method='POST' style='display:inline;'>
                                 <input type='hidden' name='id' value='{$row['id']}'>
                                 <input type='text' name='message' value='{$row['message_text']}' required>
-                                <button type='submit' name='edit'>Wijzigen</button>
+                                <button type='submit' name='edit'>Change</button>
                             </form>
                             <form method='POST' style='display:inline;'>
                                 <input type='hidden' name='id' value='{$row['id']}'>
-                                <button type='submit' name='delete' onclick='return confirm(\"Weet je zeker dat je dit bericht wilt verwijderen?\")'>Verwijderen</button>
+                                <button type='submit' name='delete' onclick='return confirm(\"Are you sure to delete?\")'>Delete</button>
                             </form>
                         </td>
                     </tr>";
                 }
             } else {
-                echo "<tr><td colspan='4'>Geen berichten gevonden.</td></tr>";
+                echo "<tr><td colspan='4'>No messages found.</td></tr>";
             }
             ?>
         </table>
-        <a href="https://code.webwings.nl/crud-countdown.php" target="_blank">Beheer Event Dashboard</a>
     </div>
 </body>
 </html>
