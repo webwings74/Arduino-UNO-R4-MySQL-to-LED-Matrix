@@ -1,46 +1,63 @@
 // Show messages from a MariaDB/SQL Server on the
 // Matrix Display of a Arduino UNO R4 Wifi.
-// (c) 2025 Richard, webwings.nl 
+// (c) 2025 Richard, webwings.nl
 
-#include "secrets.h"                    // Wifi & Database credentials.
-#include <WiFiS3.h>                     // WiFi-library for the UNO R4 WiFi
+/**
+ * Libraries used:
+ * - secrets.h            : Local header file containing WiFi and database credentials.
+ * - WiFiS3.h             : WiFi library for the Arduino UNO R4 WiFi board.
+ * - MySQL_Connection.h   : Library for establishing a connection to a MySQL/MariaDB server.
+ * - MySQL_Cursor.h       : Library for executing SQL queries and retrieving results.
+ * - ArduinoGraphics.h    : Graphics library required for rendering text on the LED matrix.
+ * - Arduino_LED_Matrix.h : Library for controlling the built-in LED matrix on the UNO R4 WiFi.
+ */
+
+#include "secrets.h"                    // WiFi & Database credentials
+#include <WiFiS3.h>                     // WiFi library for the UNO R4 WiFi
 #include <MySQL_Connection.h>           // MySQL library
-#include <MySQL_Cursor.h>               // For SQL-queries
-#include <ArduinoGraphics.h>            // Graphic library
-#include <Arduino_LED_Matrix.h>         // LED-matrix support
+#include <MySQL_Cursor.h>               // For SQL queries
+#include <ArduinoGraphics.h>            // Graphics library
+#include <Arduino_LED_Matrix.h>         // LED matrix support
 
-// WiFi-Setup
-const char* ssid = WIFI_SSID;           // Use data from secrets.h
-const char* password = WIFI_PASSWORD;   // Use data from secrets.h
+// WiFi setup
+const char* ssid = WIFI_SSID;           // Use SSID from secrets.h
+const char* password = WIFI_PASSWORD;   // Use password from secrets.h
 
-// MySQL database instellingen
-const char* server_url = DB_HOST;       // Use credentials from secrets.h
-IPAddress server_ip;                    // IP-adress that is retrieved by DNS
+// MySQL database settings
+const char* server_url = DB_HOST;       // Use host from secrets.h
+IPAddress server_ip;                    // IP address retrieved via DNS lookup
 const int server_port = DB_PORT;        // Use port from secrets.h
-char user[20];                          // Username, define array
-char password_db[20];                   // Password, define array
-char database[32];                      // Database name, used to store the table.
+char user[20];                          // Database username array
+char password_db[20];                   // Database password array
+char database[32];                      // Database name array
 
-// Database SQL Query to retrieve messages
+// SQL query to retrieve messages from the database
 const char query[] = "SELECT message_text FROM arduino_messages ORDER BY created_at DESC;";
 
-// WiFi- en MySQL-objects
+// WiFi and MySQL objects
 WiFiClient client;
 MySQL_Connection conn((Client *)&client);
 
-// LED-matrix object
+// LED matrix object
 ArduinoLEDMatrix matrix;
 
 // Message variables
-String scrollText = " Verbinding maken... ";  // Start text
+String scrollText = " Connecting... ";  // Initial display text
 bool newTextAvailable = false;
 
-// Setup
+/**
+ * setup()
+ * Initialises the Arduino on startup.
+ * Copies credentials from secrets.h into local variables,
+ * starts the serial monitor, connects to WiFi, resolves the
+ * database server hostname via DNS, connects to the MySQL
+ * database, and initialises the LED matrix for text scrolling.
+ */
 void setup() {
-  // Variabelen voor de gebruiker en de database uit secrets.h
-  strcpy(user, DB_USER);                  // Database Username from secrets.h
+  // Copy credentials from secrets.h into local variables
+  strcpy(user, DB_USER);                  // Database username from secrets.h
   strcpy(password_db, DB_PASSWORD);       // Password from secrets.h
-  strcpy(database, DB_NAME);              // Database from secrets.h
+  strcpy(database, DB_NAME);              // Database name from secrets.h
 
   // Start serial monitor
   Serial.begin(115200);
@@ -49,126 +66,149 @@ void setup() {
   // Connect to WiFi
   connectToWiFi();
 
-  // DNS resolve 
+  // Resolve hostname to IP address via DNS
   Serial.print("Resolving hostname: ");
   Serial.println(server_url);
   if (!WiFi.hostByName(server_url, server_ip)) {
-    Serial.println("DNS-resolution failed!");
-    while (1); // Stop if DNS does not work
+    Serial.println("DNS resolution failed!");
+    while (1); // Stop if DNS resolution fails
   }
-  Serial.print("Server IP-adres: ");
+  Serial.print("Server IP address: ");
   Serial.println(server_ip);
 
-  // Connecct to MySQL-server
+  // Connect to MySQL server
   connectToDatabase();
 
-  // Init LED-matrix
+  // Initialise LED matrix
   matrix.begin();
   matrix.beginDraw();
-  matrix.stroke(0xFFFFFFFF);           // White textcolor
-  matrix.textScrollSpeed(50);          // Scrollspeed
-  matrix.textFont(Font_5x7);           // Font select
+  matrix.stroke(0xFFFFFFFF);           // White text colour
+  matrix.textScrollSpeed(50);          // Scroll speed in milliseconds
+  matrix.textFont(Font_5x7);           // Select 5x7 pixel font
   matrix.endDraw();
 }
 
-// Function to connect to wifi
+/**
+ * connectToWiFi()
+ * Attempts to connect to the WiFi network using the credentials
+ * defined in secrets.h. Retries up to 20 times with a 500ms delay
+ * between attempts. Halts the program if the connection fails.
+ */
 void connectToWiFi() {
   Serial.print("Connecting to WiFi...");
   WiFi.begin(ssid, password);
-  int retries = 20;  // Max 20 retries
+  int retries = 20;  // Maximum number of connection attempts
   while (WiFi.status() != WL_CONNECTED && retries > 0) {
     delay(500);
     Serial.print(".");
     retries--;
   }
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("\nWiFi connected!");
+    Serial.println("
+WiFi connected!");
   } else {
-    Serial.println("\nWiFi Verbinden mislukt. Controleer instellingen!");
-    while (1);  // Stop programma
+    Serial.println("
+WiFi connection failed. Please check your settings!");
+    while (1);  // Halt program
   }
 }
 
-// Function to connect to MySQL
+/**
+ * connectToDatabase()
+ * Attempts to connect to the MySQL/MariaDB server using the
+ * credentials from secrets.h. Retries up to 3 times with a 2-second
+ * delay between attempts. After a successful connection, selects the
+ * target database. Halts the program if all attempts fail.
+ */
 void connectToDatabase() {
-  Serial.print("Connecting to MySQL-server...");
-  int retries = 3; // Max 3 retries
+  Serial.print("Connecting to MySQL server...");
+  int retries = 3; // Maximum number of connection attempts
   while (retries > 0 && !conn.connected()) {
     if (conn.connect(server_ip, server_port, user, password_db)) {
       Serial.println(" Connected!");
 
-      // Database select
+      // Select the target database
       MySQL_Cursor* cursor = new MySQL_Cursor(&conn);
       char use_db[50];
       sprintf(use_db, "USE %s;", database);
-      cursor->execute(use_db);  // Select database
+      cursor->execute(use_db);
       delete cursor;
       Serial.println("Database selected!");
       return;
     } else {
       retries--;
-      Serial.println(" Connecction failed. Trying again...");
-      delay(2000); // Wait 2 seconds
+      Serial.println(" Connection failed. Retrying...");
+      delay(2000); // Wait 2 seconds before retrying
     }
   }
 
-  Serial.println("Cannot connect to the database. Stopping programm.");
-  while (1);  // Stop programm
+  Serial.println("Unable to connect to the database. Halting program.");
+  while (1);  // Halt program
 }
 
-// Function to fetch messages and display them
+/**
+ * fetchMessagesAndScroll()
+ * Checks the WiFi and database connections, reconnecting if necessary.
+ * Executes the SQL query to retrieve all messages from the
+ * arduino_messages table and scrolls each message across the LED matrix
+ * from right to left. Waits 1 second between consecutive messages.
+ */
 void fetchMessagesAndScroll() {
-  // Check Wifi connection
+  // Check WiFi connection; reconnect if lost
   if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("WiFi-connection lost. Connecting again...");
+    Serial.println("WiFi connection lost. Reconnecting...");
     connectToWiFi();
   }
 
-  // Check MySQL-connection
+  // Check MySQL connection; reconnect if lost
   if (!conn.connected()) {
-    Serial.println("Database connection lost. Connecting again...");
+    Serial.println("Database connection lost. Reconnecting...");
     connectToDatabase();
   }
 
-  // Execute Query
+  // Execute the SQL query
   MySQL_Cursor* cursor = new MySQL_Cursor(&conn);
   if (!cursor->execute(query)) {
-    Serial.println("Fout bij uitvoeren van query!");
+    Serial.println("Error executing query!");
     delete cursor;
     return;
   }
 
-  // Retrieve column names
+  // Retrieve column metadata
   column_names *cols = cursor->get_columns();
 
-  // Retrieve results and display on LED matrix
+  // Iterate through result rows and display each message on the LED matrix
   row_values *row;
-  while ((row = cursor->get_next_row())) {  // Cycle all rows sequentially
-    String message = row->values[0];        // Get message
-    message = "     " + message;            // Add spaces for scrolling effect
-    Serial.println("Bericht: " + message);
+  while ((row = cursor->get_next_row())) {
+    String message = row->values[0];        // Read message text from result
+    message = "     " + message;            // Add leading spaces for scroll effect
+    Serial.println("Message: " + message);
 
-    // Scroll message on the LED-matrix
+    // Scroll the message across the LED matrix
     matrix.beginDraw();
-    matrix.beginText(0, 1, 0xFFFFFF);  // Position and colour
-    matrix.println(message);           // Scroll text
-    matrix.endText(SCROLL_LEFT);       // Scroll right to left
+    matrix.beginText(0, 1, 0xFFFFFF);  // Set start position and colour
+    matrix.println(message);           // Set scroll text
+    matrix.endText(SCROLL_LEFT);       // Scroll from right to left
     matrix.endDraw();
 
-    // Wait a moment for the next message
-    delay(1000);  // 1 second break between messages
+    // Pause before displaying the next message
+    delay(1000);  // 1-second pause between messages
   }
 
-  // Clear cursor
+  // Free cursor memory
   delete cursor;
 }
 
-// Main programm
+/**
+ * loop()
+ * Main program loop. Calls fetchMessagesAndScroll() every 30 seconds
+ * to check for new messages in the database and display them on the
+ * LED matrix.
+ */
 void loop() {
-  // Check every 30 seconds for message updates.
   static unsigned long lastUpdate = 0;
-  if (millis() - lastUpdate > 30000) {  // 30 seconds delay
-    fetchMessagesAndScroll();           // Check for messages and retrieve them
+  if (millis() - lastUpdate > 30000) {  // Check every 30 seconds
+    fetchMessagesAndScroll();
     lastUpdate = millis();
   }
 }
