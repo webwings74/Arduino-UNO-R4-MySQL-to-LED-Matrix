@@ -1,31 +1,63 @@
-# Arduino UNO R4 Wifi SQL to LED Matrix
-A small project to scroll messages from a MariaDB/MySQL database on a server to the LED Matrix on the Arduino UNO R4 Wifi, like the one I have and as shown below in the picture. The code should be quite self-explanitory, however it does contain remarks. They can be mostly in dutch, though. I will correct that in the near future.
+# Arduino UNO R4 WiFi — SQL to LED Matrix
+
+A small project to scroll messages from a MariaDB/MySQL database on a server to the built-in LED matrix on the Arduino UNO R4 WiFi.
 
 ![Arduino Uno R4 Wifi, with the LED Matrix](arduino-uno-r4-wifi.jpg)
 
 ## Files
-Here is the list of files, and a small description what they do.
 
 ### arduino-messages.php
-This small PHP script can add, edit and delete messages in the arduino-messages table in the MariaDB/MySQL database server. In my case, the PHP file is on the same server as the database, but this is not nessesary.
+A PHP web dashboard for adding, editing, and deleting messages in the `arduino_messages` table in the MariaDB/MySQL database. Can be hosted on the same server as the database or on a separate web server.
 
 ### arduino-messages.sql
-This is the SQL file, that creates the "arduino_messages" table in a MariaDB or MySQL database of your choice. Please create an account for the use of the table by the Arduino.
+SQL file that creates the `arduino_messages` table in a MariaDB or MySQL database of your choice. Create a dedicated database user account for the Arduino to use.
 
 ### config.php
-The file that contains your database configuration. Please update as needed. It needs your database credentials for using the database.
+Database configuration file. Update this file with your database credentials before deploying the PHP dashboard.
 
 ### secrets.h
-This is the personal configuration file. Here you need to add your wifi credentials that the Arduino has to use, and the database information and database user account. Edit as needed.
+Arduino configuration file containing WiFi credentials and database connection settings. Update this file before uploading the sketch to your Arduino.
 
 ### style.css
-The stylesheet, to nice-ify the PHP script page to edit the messages. Off course this is optional, however quite nice.
+Optional stylesheet for styling the PHP dashboard page.
 
 ### uno-r4-wifi-sql-to-matrix.ino
-Off course, this is the Adruino IDE file to import in your Sketch (together with the secrets.h file!).
+The main Arduino sketch. Import this file into the Arduino IDE together with `secrets.h`.
 
-## Things to remember
-The arduino-messages.php file does not have any security measures for adding, editing and deleting messages. So if someone knows the URL of the PHP file, he/she can see and edit the messages. Let me know if this needs to be addressed, or if you have a good solution, you also can let me know. Enjoy using your Arduino's, ESP32's and all the other types of MCU's.
+## Setup
 
-## Future modifications
-Maybe it woud be a good option, if possible, to set a wifi connection via a different way of provisioning the data so the Arduino could be taken to a hotel or place with a public wifi. Any ideas how to do that will be appreciated.
+### 1. Database Setup
+- Run `arduino-messages.sql` to create the `arduino_messages` table in your MariaDB/MySQL database.
+- Create a dedicated database user account with access to the table.
+- Update `config.php` with your database credentials.
+
+### 2. PHP Dashboard Setup
+- Upload `arduino-messages.php`, `config.php`, and `style.css` to your web server.
+- Open the dashboard in a browser to add, edit, or delete messages.
+
+### 3. Arduino Setup
+- Update `secrets.h` with your WiFi credentials and database connection details.
+- Open `uno-r4-wifi-sql-to-matrix.ino` in the Arduino IDE.
+- Make sure `secrets.h` is in the same Sketch folder.
+- Upload the sketch to your Arduino UNO R4 WiFi.
+
+## Usage
+- Open `arduino-messages.php` in your browser to manage messages.
+- The Arduino fetches messages from the database every 30 seconds and scrolls them across the LED matrix.
+
+## Things to Remember
+The `arduino-messages.php` dashboard currently has no authentication or access control. Anyone who knows the URL can view and modify messages. Consider adding a login mechanism if the dashboard is publicly accessible.
+
+## Future Modifications
+- **WiFi provisioning**: It would be useful to support dynamic WiFi configuration, allowing the Arduino to be used in locations with different networks (e.g. hotels) without re-flashing the firmware.
+- **Dashboard security**: Adding basic authentication or a login page to the PHP dashboard.
+
+## Changelog
+
+### translate branch
+- Translated all Dutch strings and comments to English in `uno-r4-wifi-sql-to-matrix.ino` and `arduino-messages.php`.
+- Added library documentation block at the top of both files.
+- Refactored `arduino-messages.php`: extracted database operations into documented functions (`connectToDatabase`, `addMessage`, `editMessage`, `deleteMessage`, `getMessages`).
+- Added PHPDoc-style function comments to all functions in `arduino-messages.php`.
+- Added Doxygen-style function comments to all functions in `uno-r4-wifi-sql-to-matrix.ino`.
+- Updated `README.md` with improved setup instructions and changelog.
