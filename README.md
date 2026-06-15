@@ -56,8 +56,8 @@ The `arduino-messages.php` dashboard currently has no authentication or access c
 
 ### translate branch
 - Translated all Dutch strings and comments to English in `uno-r4-wifi-sql-to-matrix.ino` and `arduino-messages.php`.
-- Added library documentation block at the top of both files.
+- Added `@file`, `@brief`, `@details` and `@note` Doxygen-style tags to all functions in `uno-r4-wifi-sql-to-matrix.ino`.
+- Added PHPDoc-style `@param` and `@return` tags to all functions in `arduino-messages.php`.
+- Both files now use consistent, standards-compliant documentation style.
 - Refactored `arduino-messages.php`: extracted database operations into documented functions (`connectToDatabase`, `addMessage`, `editMessage`, `deleteMessage`, `getMessages`).
-- Added PHPDoc-style function comments to all functions in `arduino-messages.php`.
-- Added Doxygen-style function comments to all functions in `uno-r4-wifi-sql-to-matrix.ino`.
 - Updated `README.md` with improved setup instructions and changelog.
