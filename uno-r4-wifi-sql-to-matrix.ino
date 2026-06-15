@@ -3,13 +3,17 @@
 // (c) 2025 Richard, webwings.nl
 
 /**
- * Libraries used:
- * - secrets.h            : Local header file containing WiFi and database credentials.
- * - WiFiS3.h             : WiFi library for the Arduino UNO R4 WiFi board.
- * - MySQL_Connection.h   : Library for establishing a connection to a MySQL/MariaDB server.
- * - MySQL_Cursor.h       : Library for executing SQL queries and retrieving results.
- * - ArduinoGraphics.h    : Graphics library required for rendering text on the LED matrix.
- * - Arduino_LED_Matrix.h : Library for controlling the built-in LED matrix on the UNO R4 WiFi.
+ * @file    uno-r4-wifi-sql-to-matrix.ino
+ * @brief   Scrolls messages from a MariaDB/MySQL database on the built-in
+ *          LED matrix of the Arduino UNO R4 WiFi.
+ *
+ * @details Dependencies / libraries used:
+ *  - secrets.h            : Local header file containing WiFi and database credentials.
+ *  - WiFiS3.h             : WiFi library for the Arduino UNO R4 WiFi board.
+ *  - MySQL_Connection.h   : Library for establishing a connection to a MySQL/MariaDB server.
+ *  - MySQL_Cursor.h       : Library for executing SQL queries and retrieving results.
+ *  - ArduinoGraphics.h    : Graphics library required for rendering text on the LED matrix.
+ *  - Arduino_LED_Matrix.h : Library for controlling the built-in LED matrix on the UNO R4 WiFi.
  */
 
 #include "secrets.h"                    // WiFi & Database credentials
@@ -46,12 +50,12 @@ String scrollText = " Connecting... ";  // Initial display text
 bool newTextAvailable = false;
 
 /**
- * setup()
- * Initialises the Arduino on startup.
- * Copies credentials from secrets.h into local variables,
- * starts the serial monitor, connects to WiFi, resolves the
- * database server hostname via DNS, connects to the MySQL
- * database, and initialises the LED matrix for text scrolling.
+ * @brief   Initialises the Arduino on startup.
+ *
+ * @details Copies credentials from secrets.h into local variables,
+ *          starts the serial monitor, connects to WiFi, resolves the
+ *          database server hostname via DNS, connects to the MySQL
+ *          database, and initialises the LED matrix for text scrolling.
  */
 void setup() {
   // Copy credentials from secrets.h into local variables
@@ -89,10 +93,13 @@ void setup() {
 }
 
 /**
- * connectToWiFi()
- * Attempts to connect to the WiFi network using the credentials
- * defined in secrets.h. Retries up to 20 times with a 500ms delay
- * between attempts. Halts the program if the connection fails.
+ * @brief   Connects to the WiFi network.
+ *
+ * @details Uses the SSID and password defined in secrets.h.
+ *          Retries up to 20 times with a 500ms delay between attempts.
+ *
+ * @note    Halts the program permanently if the connection cannot be
+ *          established after all retries.
  */
 void connectToWiFi() {
   Serial.print("Connecting to WiFi...");
@@ -114,11 +121,14 @@ WiFi connection failed. Please check your settings!");
 }
 
 /**
- * connectToDatabase()
- * Attempts to connect to the MySQL/MariaDB server using the
- * credentials from secrets.h. Retries up to 3 times with a 2-second
- * delay between attempts. After a successful connection, selects the
- * target database. Halts the program if all attempts fail.
+ * @brief   Connects to the MySQL/MariaDB database server.
+ *
+ * @details Uses the host, port, username, and password defined in secrets.h.
+ *          Retries up to 3 times with a 2-second delay between attempts.
+ *          After a successful connection, selects the target database.
+ *
+ * @note    Halts the program permanently if the connection cannot be
+ *          established after all retries.
  */
 void connectToDatabase() {
   Serial.print("Connecting to MySQL server...");
@@ -147,11 +157,15 @@ void connectToDatabase() {
 }
 
 /**
- * fetchMessagesAndScroll()
- * Checks the WiFi and database connections, reconnecting if necessary.
- * Executes the SQL query to retrieve all messages from the
- * arduino_messages table and scrolls each message across the LED matrix
- * from right to left. Waits 1 second between consecutive messages.
+ * @brief   Fetches messages from the database and scrolls them on the LED matrix.
+ *
+ * @details Checks WiFi and database connections, reconnecting if necessary.
+ *          Executes the SQL query to retrieve all messages from the
+ *          arduino_messages table and scrolls each message across the LED
+ *          matrix from right to left. Waits 1 second between messages.
+ *
+ * @note    If the SQL query fails, the function returns early without
+ *          displaying any messages.
  */
 void fetchMessagesAndScroll() {
   // Check WiFi connection; reconnect if lost
@@ -200,10 +214,12 @@ void fetchMessagesAndScroll() {
 }
 
 /**
- * loop()
- * Main program loop. Calls fetchMessagesAndScroll() every 30 seconds
- * to check for new messages in the database and display them on the
- * LED matrix.
+ * @brief   Main program loop.
+ *
+ * @details Calls fetchMessagesAndScroll() every 30 seconds to check for
+ *          new messages in the database and display them on the LED matrix.
+ *
+ * @note    Uses millis() to avoid blocking the program with delay().
  */
 void loop() {
   static unsigned long lastUpdate = 0;
